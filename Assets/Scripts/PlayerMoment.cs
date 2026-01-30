@@ -23,15 +23,6 @@ public class PlayerMoment : MonoBehaviour
         Keyboard.current.dKey.isPressed ? 1 : 0;
         playerRB.linearVelocity = new Vector2(keyCheck * moveSpeed, playerRB.linearVelocity.y);
 
-        if (Keyboard.current.spaceKey.wasPressedThisFrame && !grounded)
-        {
-            playerRB.linearVelocity = Vector2.up * jumpForce;
-            plyAnim.SetTrigger("jumpTG");
-            grounded = true;
-        }
-
-        //Character Flip
-
         if (keyCheck != 0)
         {
             Vector3 scale = transform.localScale;
@@ -41,15 +32,7 @@ public class PlayerMoment : MonoBehaviour
 
         //Animation
         plyAnim.SetBool("runPM", keyCheck != 0);
-        plyAnim.SetBool("groundedPM", grounded);
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.tag == "Ground")
-        {
-            grounded = false;
-        }
-    }
 
 }
