@@ -37,6 +37,16 @@ public class PlayerMovement : MonoBehaviour
         anim.SetFloat("MoveX", moveInput.x);
         anim.SetFloat("MoveY", moveInput.y);
         anim.SetBool("IsMoving", moveInput != Vector2.zero);
+
+        // Flip sprite when moving left/right
+        if (moveInput.x > 0)
+        {
+            transform.localScale = new Vector3(1, 1, 1); // Face right
+        }
+        else if (moveInput.x < 0)
+        {
+            transform.localScale = new Vector3(-1, 1, 1); // Face left (flipped)
+        }
     }
 
     void FixedUpdate()
