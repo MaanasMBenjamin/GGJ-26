@@ -773,7 +773,11 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   captureStartupLogs: {}
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   activeInputHandler: 2
+=======
+  activeInputHandler: 0
+>>>>>>> Stashed changes
 =======
   activeInputHandler: 0
 >>>>>>> Stashed changes
