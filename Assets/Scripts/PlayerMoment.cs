@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -9,29 +8,18 @@ public class PlayerMovement : MonoBehaviour
     private Animator anim;
     private Vector2 moveInput;
 
-    private PlayerInputActions inputActions;
-
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-
-        inputActions = new PlayerInputActions();
-    }
-
-    void OnEnable()
-    {
-        inputActions.Player.Enable();
-    }
-
-    void OnDisable()
-    {
-        inputActions.Player.Disable();
     }
 
     void Update()
     {
-        moveInput = inputActions.Player.Move.ReadValue<Vector2>();
+        // Old Input System - uses WASD or Arrow Keys automatically
+        float moveX = Input.GetAxisRaw("Horizontal"); // A/D or Left/Right arrows
+        float moveY = Input.GetAxisRaw("Vertical");   // W/S or Up/Down arrows
+        moveInput = new Vector2(moveX, moveY);
 
         // Animator parameters
         anim.SetFloat("MoveX", moveInput.x);
