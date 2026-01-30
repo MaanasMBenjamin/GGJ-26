@@ -13,7 +13,7 @@ public class PlayerMoment : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>(); // 👈 Animator added
+        animator = GetComponent<Animator>();
     }
 
     void Update()
@@ -25,16 +25,29 @@ public class PlayerMoment : MonoBehaviour
             float x = 0f;
             float y = 0f;
 
-            if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed) x -= 1f;
-            if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed) x += 1f;
-            if (Keyboard.current.sKey.isPressed || Keyboard.current.downArrowKey.isPressed) y -= 1f;
-            if (Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed) y += 1f;
+            if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed)
+                x = -1f;
+            else if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed)
+                x = 1f;
+
+            if (Keyboard.current.sKey.isPressed || Keyboard.current.downArrowKey.isPressed)
+                y = -1f;
+            else if (Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed)
+                y = 1f;
 
             movement = new Vector2(x, y).normalized;
         }
 
-        // 🎞 Animation parameters
-        animator.SetFloat("MoveX", movement.x);
+        // 🔁 Flip sprite left / right
+        if (movement.x != 0)
+        {
+            Vector3 scale = transform.localScale;
+            scale.x = Mathf.Sign(movement.x);
+            transform.localScale = scale;
+        }
+
+        // 🎞 Send values to Animator
+        animator.SetFloat("MoveX", Mathf.Abs(movement.x)); // only need magnitude
         animator.SetFloat("MoveY", movement.y);
         animator.SetFloat("Speed", movement.sqrMagnitude);
     }
