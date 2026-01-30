@@ -1,59 +1,46 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerMoment : MonoBehaviour
+public class PlayerMovement : MonoBehaviour
 {
-    [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 5f;
 
     private Rigidbody2D rb;
-    private Animator animator;
-    private Vector2 movement;
+    private Animator anim;
+    private Vector2 moveInput;
 
-    void Start()
+    private PlayerInputActions inputActions;
+
+    void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>();
+        anim = GetComponent<Animator>();
+
+        inputActions = new PlayerInputActions();
+    }
+
+    void OnEnable()
+    {
+        inputActions.Player.Enable();
+    }
+
+    void OnDisable()
+    {
+        inputActions.Player.Disable();
     }
 
     void Update()
     {
-        movement = Vector2.zero;
+        moveInput = inputActions.Player.Move.ReadValue<Vector2>();
 
-        if (Keyboard.current != null)
-        {
-            float x = 0f;
-            float y = 0f;
-
-            if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed)
-                x = -1f;
-            else if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed)
-                x = 1f;
-
-            if (Keyboard.current.sKey.isPressed || Keyboard.current.downArrowKey.isPressed)
-                y = -1f;
-            else if (Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed)
-                y = 1f;
-
-            movement = new Vector2(x, y).normalized;
-        }
-
-        // 🔁 Flip sprite left / right
-        if (movement.x != 0)
-        {
-            Vector3 scale = transform.localScale;
-            scale.x = Mathf.Sign(movement.x);
-            transform.localScale = scale;
-        }
-
-        // 🎞 Send values to Animator
-        animator.SetFloat("MoveX", Mathf.Abs(movement.x)); // only need magnitude
-        animator.SetFloat("MoveY", movement.y);
-        animator.SetFloat("Speed", movement.sqrMagnitude);
+        // Animator parameters
+        anim.SetFloat("MoveX", moveInput.x);
+        anim.SetFloat("MoveY", moveInput.y);
+        anim.SetBool("IsMoving", moveInput != Vector2.zero);
     }
 
     void FixedUpdate()
     {
-        rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
+        rb.MovePosition(rb.position + moveInput.normalized * moveSpeed * Time.fixedDeltaTime);
     }
 }
