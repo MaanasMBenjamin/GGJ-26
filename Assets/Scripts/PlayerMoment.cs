@@ -2,15 +2,30 @@ using UnityEngine;
 
 public class PlayerMoment : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    [Header("Movement Settings")]
+    [SerializeField] private float moveSpeed = 5f;
+    
+    private Rigidbody2D rb;
+    private Vector2 movement;
+
     void Start()
     {
-        
+        rb = GetComponent<Rigidbody2D>();
     }
 
-    // Update is called once per frame
     void Update()
     {
+        // Get input from WASD or Arrow keys
+        movement.x = Input.GetAxisRaw("Horizontal");
+        movement.y = Input.GetAxisRaw("Vertical");
         
+        // Normalize to prevent faster diagonal movement
+        movement = movement.normalized;
+    }
+
+    void FixedUpdate()
+    {
+        // Apply movement using physics
+        rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
     }
 }
