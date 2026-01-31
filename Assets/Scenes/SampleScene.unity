@@ -168,7 +168,7 @@ MonoBehaviour:
   - {fileID: 5938978427060904897, guid: be2e8a183950f4246a11e3becb7440af, type: 3}
   - {fileID: 1341478821944290154, guid: f73f0129a4d01774894d5621ab90410b, type: 3}
   spawnPoint: {fileID: 63025629}
-  cooldownDuration: 5
+  cooldownDuration: 4
   altarRenderer: {fileID: 0}
   activeColor: {r: 1, g: 1, b: 1, a: 1}
   cooldownColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
