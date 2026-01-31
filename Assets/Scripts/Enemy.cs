@@ -28,6 +28,7 @@ public class Enemy : MonoBehaviour
 	[SerializeField] private float lightInnerRadiusRatio = 0.4f; // inner radius relative to outer
 	[SerializeField] private float lightIntensity = 1f; // 0..1
 	[SerializeField] private bool respectGlobalLightingState = true; // disable during scene flicker
+	[SerializeField] private bool debugLogs = false; // enable for chase/invisibility logs
 
 	[Header("Light Blink")]
 	[SerializeField] private float defaultBlinkFrequency = 6f;
@@ -103,6 +104,34 @@ public class Enemy : MonoBehaviour
 	private void Update()
 	{
 		if (player == null) return;
+
+		// If player is invisible (via mask), do not chase
+		if (PlayerMask.IsInvisible)
+		{
+			// When invisible, treat as idle state
+			if (debugLogs) Debug.Log("[Enemy] Player is invisible: stopping chase");
+			isChasing = false;
+			// Optionally perform patrol/return logic
+			if (guardingEnabled)
+			{
+				// Simple patrol wait
+				patrolWaitTimer += Time.deltaTime;
+			}
+			else
+			{
+				// Return to home
+				Vector2 toHome = (Vector2)(homePosition - transform.position);
+				float sqrHomeDist = toHome.sqrMagnitude;
+				float sqrHomeStop = homeStopDistance * homeStopDistance;
+				if (sqrHomeDist > sqrHomeStop)
+				{
+					Vector3 homeStep = (Vector3)(toHome.normalized * returnSpeed * Time.deltaTime);
+					transform.position += homeStep;
+				}
+			}
+			ApplyLightSync();
+			return;
+		}
 
 		ApplyLightSync();
 
@@ -206,7 +235,8 @@ public class Enemy : MonoBehaviour
 			blinkActive = false;
 			// do not clear overrideGate; scene may keep enemy on until player turns on
 		}
-		float outer = Mathf.Max(0.01f, agroRadius);
+		// Optionally sync light radius to agro; otherwise preserve current light radius
+		float outer = syncLightWithAgro ? Mathf.Max(0.01f, agroRadius) : Mathf.Max(0.01f, enemyLight.pointLightOuterRadius);
 		float inner = Mathf.Clamp01(lightInnerRadiusRatio) * outer;
 		enemyLight.pointLightOuterRadius = outer;
 		enemyLight.pointLightInnerRadius = inner;
