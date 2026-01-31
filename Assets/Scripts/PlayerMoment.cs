@@ -21,13 +21,6 @@ public class PlayerMoment : MonoBehaviour
         playerRB.linearVelocity = moveDir * moveSpeed;
 
 
-        if (hor != 0)
-        {
-            Vector3 scale = transform.localScale;
-            scale.x = Mathf.Sign(hor) * Mathf.Abs(scale.x);
-            transform.localScale = scale;
-        }
-
         // Animator parameters
         plyAnim.SetFloat("moveX", hor);
         plyAnim.SetFloat("moveY", ver);

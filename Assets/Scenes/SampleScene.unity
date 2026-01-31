@@ -3778,7 +3778,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   moveSpeed: 5
-  jumpForce: 5
 --- !u!212 &544965777
 SpriteRenderer:
   serializedVersion: 2
