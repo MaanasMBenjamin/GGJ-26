@@ -1,15 +1,10 @@
-﻿using Unity.VisualScripting;
-using UnityEngine;
-using UnityEngine.InputSystem;
-using static UnityEngine.RuleTile.TilingRuleOutput;
+﻿using UnityEngine;
 
 public class PlayerMoment : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private float jumpForce = 5f;
     private Rigidbody2D playerRB;
     private Animator plyAnim;
-    private bool grounded;
 
     private void Awake()
     {
@@ -19,20 +14,24 @@ public class PlayerMoment : MonoBehaviour
 
     private void Update()
     {
-        float keyCheck = Keyboard.current.aKey.isPressed ? -1 :
-        Keyboard.current.dKey.isPressed ? 1 : 0;
-        playerRB.linearVelocity = new Vector2(keyCheck * moveSpeed, playerRB.linearVelocity.y);
+        float hor = Input.GetAxisRaw("Horizontal");
+        float ver = Input.GetAxisRaw("Vertical");
 
-        if (keyCheck != 0)
-        {
-            Vector3 scale = transform.localScale;
-            scale.x = Mathf.Sign(keyCheck) * Mathf.Abs(scale.x);
-            transform.localScale = scale;
-        }
+        Vector2 moveDir = new Vector2(hor, ver).normalized;
+        playerRB.linearVelocity = moveDir * moveSpeed;
 
-        //Animation
-        plyAnim.SetBool("runPM", keyCheck != 0);
+       
+        //if (hor != 0)
+        //{
+        //    Vector3 scale = transform.localScale;
+        //    scale.x = Mathf.Sign(hor) * Mathf.Abs(scale.x);
+        //    transform.localScale = scale;
+        //}
+
+        // Animator parameters
+        plyAnim.SetFloat("moveX", hor);
+        plyAnim.SetFloat("moveY", ver);
+        plyAnim.SetBool("isMoving", moveDir != Vector2.zero);
     }
-
 
 }
