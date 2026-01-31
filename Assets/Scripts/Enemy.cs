@@ -17,6 +17,7 @@ public class Enemy : MonoBehaviour
 	[SerializeField] private float patrolDistanceX = 3f;    // distance along X from home
 	[SerializeField] private float patrolPauseSeconds = 8f; // wait at each patrol point
 	[SerializeField] private float patrolSpeed = 3f;        // speed while patrolling
+	[SerializeField] private float postChasePauseSeconds = 4.5f; // pause after chase ends
 
 	[Header("Target Settings")]
 	[SerializeField] private Transform player;          // assign your player here (optional)
@@ -29,6 +30,8 @@ public class Enemy : MonoBehaviour
 	private Vector3 patrolPointB;                       // home + X distance
 	private int patrolIndex;                            // 0 -> A, 1 -> B
 	private float patrolWaitTimer;                      // time waited at current point
+	private bool postChaseWaiting;                      // true while pausing after chase
+	private float postChaseWaitTimer;                   // timer for post-chase pause
 
 	private void Awake()
 	{
@@ -64,6 +67,7 @@ public class Enemy : MonoBehaviour
 		float sqrLose = loseRadius * loseRadius;
 		float sqrStop = stoppingDistance * stoppingDistance;
 
+		bool wasChasing = isChasing;
 		// Hysteresis: start chase inside agro; stop chase outside lose
 		if (!isChasing && sqrDist <= sqrAgro)
 		{
@@ -72,6 +76,13 @@ public class Enemy : MonoBehaviour
 		else if (isChasing && sqrDist > sqrLose)
 		{
 			isChasing = false;
+		}
+
+		// If we just stopped chasing, start a short pause before resuming patrol
+		if (wasChasing && !isChasing && guardingEnabled)
+		{
+			postChaseWaiting = true;
+			postChaseWaitTimer = 0f;
 		}
 
 		// Move towards player while chasing and not too close
@@ -85,25 +96,37 @@ public class Enemy : MonoBehaviour
 		{
 			if (guardingEnabled)
 			{
-				// Patrol between A and B along X, pausing at each point
-				Vector3 target = (patrolIndex == 0) ? patrolPointA : patrolPointB;
-				Vector2 toTarget = (Vector2)(target - transform.position);
-				float sqrTargetDist = toTarget.sqrMagnitude;
-				float sqrPatrolStop = homeStopDistance * homeStopDistance;
-
-				if (sqrTargetDist <= sqrPatrolStop)
+				// Pause briefly after chase ends, then resume patrol to last target
+				if (postChaseWaiting)
 				{
-					patrolWaitTimer += Time.deltaTime;
-					if (patrolWaitTimer >= patrolPauseSeconds)
+					postChaseWaitTimer += Time.deltaTime;
+					if (postChaseWaitTimer >= postChasePauseSeconds)
 					{
-						patrolIndex = 1 - patrolIndex; // toggle between 0 and 1
-						patrolWaitTimer = 0f;
+						postChaseWaiting = false;
 					}
 				}
 				else
 				{
-					Vector3 step = (Vector3)(toTarget.normalized * patrolSpeed * Time.deltaTime);
-					transform.position += step;
+					// Patrol between A and B along X, pausing at each point
+					Vector3 target = (patrolIndex == 0) ? patrolPointA : patrolPointB;
+					Vector2 toTarget = (Vector2)(target - transform.position);
+					float sqrTargetDist = toTarget.sqrMagnitude;
+					float sqrPatrolStop = homeStopDistance * homeStopDistance;
+
+					if (sqrTargetDist <= sqrPatrolStop)
+					{
+						patrolWaitTimer += Time.deltaTime;
+						if (patrolWaitTimer >= patrolPauseSeconds)
+						{
+							patrolIndex = 1 - patrolIndex; // toggle between 0 and 1
+							patrolWaitTimer = 0f;
+						}
+					}
+					else
+					{
+						Vector3 step = (Vector3)(toTarget.normalized * patrolSpeed * Time.deltaTime);
+						transform.position += step;
+					}
 				}
 			}
 			else
