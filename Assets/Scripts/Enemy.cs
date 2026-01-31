@@ -12,6 +12,12 @@ public class Enemy : MonoBehaviour
 	[SerializeField] private float returnSpeed = 3f;    // speed to return home
 	[SerializeField] private float homeStopDistance = 0.05f; // how close to home to stop
 
+	[Header("Guarding / Patrol")]
+	[SerializeField] private bool guardingEnabled = false; // when not chasing, patrol along X
+	[SerializeField] private float patrolDistanceX = 3f;    // distance along X from home
+	[SerializeField] private float patrolPauseSeconds = 8f; // wait at each patrol point
+	[SerializeField] private float patrolSpeed = 3f;        // speed while patrolling
+
 	[Header("Target Settings")]
 	[SerializeField] private Transform player;          // assign your player here (optional)
 	[SerializeField] private bool findByTag = true;     // if true, auto-find player by tag
@@ -19,6 +25,10 @@ public class Enemy : MonoBehaviour
 
 	private bool isChasing;
 	private Vector3 homePosition;                       // per-instance home (spawn) position
+	private Vector3 patrolPointA;                       // home
+	private Vector3 patrolPointB;                       // home + X distance
+	private int patrolIndex;                            // 0 -> A, 1 -> B
+	private float patrolWaitTimer;                      // time waited at current point
 
 	private void Awake()
 	{
@@ -34,6 +44,12 @@ public class Enemy : MonoBehaviour
 		// Capture this instance's starting position as its home.
 		// Safe for many prefab instances placed randomly.
 		homePosition = transform.position;
+
+		// Initialize patrol points based on home
+		patrolPointA = homePosition;
+		patrolPointB = homePosition + Vector3.right * patrolDistanceX;
+		patrolIndex = 1; // start by moving away from home to B
+		patrolWaitTimer = 0f;
 	}
 
 	private void Update()
@@ -64,17 +80,44 @@ public class Enemy : MonoBehaviour
 			Vector3 step = (Vector3)(toPlayer.normalized * moveSpeed * Time.deltaTime);
 			transform.position += step;
 		}
-		// When not chasing, return to home position
+		// When not chasing
 		else if (!isChasing)
 		{
-			Vector2 toHome = (Vector2)(homePosition - transform.position);
-			float sqrHomeDist = toHome.sqrMagnitude;
-			float sqrHomeStop = homeStopDistance * homeStopDistance;
-
-			if (sqrHomeDist > sqrHomeStop)
+			if (guardingEnabled)
 			{
-				Vector3 homeStep = (Vector3)(toHome.normalized * returnSpeed * Time.deltaTime);
-				transform.position += homeStep;
+				// Patrol between A and B along X, pausing at each point
+				Vector3 target = (patrolIndex == 0) ? patrolPointA : patrolPointB;
+				Vector2 toTarget = (Vector2)(target - transform.position);
+				float sqrTargetDist = toTarget.sqrMagnitude;
+				float sqrPatrolStop = homeStopDistance * homeStopDistance;
+
+				if (sqrTargetDist <= sqrPatrolStop)
+				{
+					patrolWaitTimer += Time.deltaTime;
+					if (patrolWaitTimer >= patrolPauseSeconds)
+					{
+						patrolIndex = 1 - patrolIndex; // toggle between 0 and 1
+						patrolWaitTimer = 0f;
+					}
+				}
+				else
+				{
+					Vector3 step = (Vector3)(toTarget.normalized * patrolSpeed * Time.deltaTime);
+					transform.position += step;
+				}
+			}
+			else
+			{
+				// Return to home position when idle
+				Vector2 toHome = (Vector2)(homePosition - transform.position);
+				float sqrHomeDist = toHome.sqrMagnitude;
+				float sqrHomeStop = homeStopDistance * homeStopDistance;
+
+				if (sqrHomeDist > sqrHomeStop)
+				{
+					Vector3 homeStep = (Vector3)(toHome.normalized * returnSpeed * Time.deltaTime);
+					transform.position += homeStep;
+				}
 			}
 		}
 	}
@@ -94,5 +137,11 @@ public class Enemy : MonoBehaviour
 		Gizmos.color = new Color(0f, 1f, 0.5f, 0.9f);
 		Vector3 home = Application.isPlaying ? homePosition : transform.position;
 		Gizmos.DrawSphere(home, 0.06f);
+
+		// Patrol gizmos: endpoints and path
+		Vector3 pointB = home + Vector3.right * patrolDistanceX;
+		Gizmos.color = new Color(0.2f, 0.8f, 1f, 0.9f);
+		Gizmos.DrawSphere(pointB, 0.05f);
+		Gizmos.DrawLine(home, pointB);
 	}
 }
