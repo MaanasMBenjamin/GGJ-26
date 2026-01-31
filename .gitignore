@@ -11,7 +11,8 @@
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
 *.log
-
+GGJ-26.slnx
+.extnesion.json/
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
 /[Mm]emoryCaptures/
@@ -75,4 +76,12 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 ProjectSettings/EditorUserSettings.asset
+
+# VS Code
+.vscode/extensions.json
+.vscode/launch.json
+.vscode/settings.json
+
+# Solution Explorer (slnx)
+GGJ-26.slnx
 
