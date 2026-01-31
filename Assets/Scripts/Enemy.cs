@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class Enemy : MonoBehaviour
 {
@@ -19,6 +20,14 @@ public class Enemy : MonoBehaviour
 	[SerializeField] private float patrolSpeed = 3f;        // speed while patrolling
 	[SerializeField] private float postChasePauseSeconds = 4.5f; // pause after chase ends
 
+	[Header("Enemy Light (URP 2D)")]
+	[SerializeField] private Light2D enemyLight; // optional light to sync with agro
+	[SerializeField] private bool autoFindChildLight = true;
+	[SerializeField] private bool autoCreateLightIfMissing = true;
+	[SerializeField] private bool syncLightWithAgro = true;
+	[SerializeField] private float lightInnerRadiusRatio = 0.4f; // inner radius relative to outer
+	[SerializeField] private float lightIntensity = 1f; // 0..1
+
 	[Header("Target Settings")]
 	[SerializeField] private Transform player;          // assign your player here (optional)
 	[SerializeField] private bool findByTag = true;     // if true, auto-find player by tag
@@ -35,6 +44,23 @@ public class Enemy : MonoBehaviour
 
 	private void Awake()
 	{
+		if (enemyLight == null && autoFindChildLight)
+		{
+			enemyLight = GetComponentInChildren<Light2D>();
+		}
+
+		if (enemyLight == null && autoCreateLightIfMissing)
+		{
+			var go = new GameObject("Enemy Light 2D");
+			go.transform.SetParent(transform);
+			go.transform.localPosition = Vector3.zero;
+			enemyLight = go.AddComponent<Light2D>();
+			enemyLight.lightType = Light2D.LightType.Point;
+			enemyLight.intensity = Mathf.Clamp01(lightIntensity);
+			enemyLight.pointLightOuterRadius = Mathf.Max(0.01f, agroRadius);
+			enemyLight.pointLightInnerRadius = Mathf.Clamp01(lightInnerRadiusRatio) * enemyLight.pointLightOuterRadius;
+		}
+
 		if (player == null && findByTag)
 		{
 			GameObject p = GameObject.FindWithTag(playerTag);
@@ -58,6 +84,8 @@ public class Enemy : MonoBehaviour
 	private void Update()
 	{
 		if (player == null) return;
+
+		ApplyLightSync();
 
 		// Distance to player (use squared distances to avoid sqrt cost)
 		Vector2 toPlayer = player.position - transform.position;
@@ -143,6 +171,20 @@ public class Enemy : MonoBehaviour
 				}
 			}
 		}
+	}
+
+	private void ApplyLightSync()
+	{
+		if (!syncLightWithAgro || enemyLight == null) return;
+		if (enemyLight.lightType != Light2D.LightType.Point)
+		{
+			enemyLight.lightType = Light2D.LightType.Point;
+		}
+		float outer = Mathf.Max(0.01f, agroRadius);
+		float inner = Mathf.Clamp01(lightInnerRadiusRatio) * outer;
+		enemyLight.pointLightOuterRadius = outer;
+		enemyLight.pointLightInnerRadius = inner;
+		enemyLight.intensity = Mathf.Clamp01(lightIntensity);
 	}
 
 	private void OnDrawGizmosSelected()
