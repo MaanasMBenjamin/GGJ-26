@@ -23,6 +23,7 @@ public class Enemy : MonoBehaviour
 	[Header("Enemy Light (URP 2D)")]
 	[SerializeField] private Light2D enemyLight; // optional light to sync with agro
 	[SerializeField] private bool autoFindChildLight = true;
+	[SerializeField] private bool autoCreateLightIfMissing = true;
 	[SerializeField] private bool syncLightWithAgro = true;
 	[SerializeField] private float lightInnerRadiusRatio = 0.4f; // inner radius relative to outer
 	[SerializeField] private float lightIntensity = 1f; // 0..1
@@ -47,17 +48,24 @@ public class Enemy : MonoBehaviour
 		{
 			enemyLight = GetComponentInChildren<Light2D>();
 		}
+
+		if (enemyLight == null && autoCreateLightIfMissing)
+		{
+			var go = new GameObject("Enemy Light 2D");
+			go.transform.SetParent(transform);
+			go.transform.localPosition = Vector3.zero;
+			enemyLight = go.AddComponent<Light2D>();
+			enemyLight.lightType = Light2D.LightType.Point;
+			enemyLight.intensity = Mathf.Clamp01(lightIntensity);
+			enemyLight.pointLightOuterRadius = Mathf.Max(0.01f, agroRadius);
+			enemyLight.pointLightInnerRadius = Mathf.Clamp01(lightInnerRadiusRatio) * enemyLight.pointLightOuterRadius;
+		}
+
 		if (player == null && findByTag)
 		{
 			GameObject p = GameObject.FindWithTag(playerTag);
 			if (p != null) player = p.transform;
 		}
-	}
-
-	private void OnValidate()
-	{
-		// Keep light synced in editor when values change
-		ApplyLightSync();
 	}
 
 	private void Start()
@@ -77,7 +85,6 @@ public class Enemy : MonoBehaviour
 	{
 		if (player == null) return;
 
-		// Sync enemy light to agro radius (and intensity) every frame if enabled
 		ApplyLightSync();
 
 		// Distance to player (use squared distances to avoid sqrt cost)
