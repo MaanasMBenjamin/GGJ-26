@@ -27,6 +27,19 @@ public class Enemy : MonoBehaviour
 	[SerializeField] private bool syncLightWithAgro = true;
 	[SerializeField] private float lightInnerRadiusRatio = 0.4f; // inner radius relative to outer
 	[SerializeField] private float lightIntensity = 1f; // 0..1
+	[SerializeField] private bool respectGlobalLightingState = true; // disable during scene flicker
+
+	[Header("Light Blink")]
+	[SerializeField] private float defaultBlinkFrequency = 6f;
+	[SerializeField, Range(0f,1f)] private float defaultBlinkMinFactor = 0f;
+	[SerializeField, Range(0f,1f)] private float defaultBlinkMaxFactor = 1f;
+
+	private bool blinkActive;
+	private float blinkEndTime;
+	private float blinkFrequency;
+	private float blinkMinFactor;
+	private float blinkMaxFactor;
+	private bool overrideGate; // allows local light even when global gate is off
 
 	[Header("Target Settings")]
 	[SerializeField] private Transform player;          // assign your player here (optional)
@@ -65,6 +78,12 @@ public class Enemy : MonoBehaviour
 		{
 			GameObject p = GameObject.FindWithTag(playerTag);
 			if (p != null) player = p.transform;
+		}
+
+		// Prevent first-frame flash when global lighting disables local lights
+		if (respectGlobalLightingState && enemyLight != null && !LightingState.LocalLightsEnabled)
+		{
+			enemyLight.intensity = 0f;
 		}
 	}
 
@@ -175,16 +194,32 @@ public class Enemy : MonoBehaviour
 
 	private void ApplyLightSync()
 	{
-		if (!syncLightWithAgro || enemyLight == null) return;
+		if (enemyLight == null) return;
 		if (enemyLight.lightType != Light2D.LightType.Point)
 		{
 			enemyLight.lightType = Light2D.LightType.Point;
+		}
+
+		// expire blink
+		if (blinkActive && Time.time >= blinkEndTime)
+		{
+			blinkActive = false;
+			// do not clear overrideGate; scene may keep enemy on until player turns on
 		}
 		float outer = Mathf.Max(0.01f, agroRadius);
 		float inner = Mathf.Clamp01(lightInnerRadiusRatio) * outer;
 		enemyLight.pointLightOuterRadius = outer;
 		enemyLight.pointLightInnerRadius = inner;
-		enemyLight.intensity = Mathf.Clamp01(lightIntensity);
+		float baseIntensity = Mathf.Clamp01(lightIntensity);
+		bool gateAllows = !respectGlobalLightingState || LightingState.LocalLightsEnabled || overrideGate;
+		float targetIntensity = gateAllows ? baseIntensity : 0f;
+		if (gateAllows && blinkActive)
+		{
+			float phase = Mathf.PingPong(Time.time * blinkFrequency, 1f);
+			float factor = Mathf.Lerp(blinkMinFactor, blinkMaxFactor, phase);
+			targetIntensity = baseIntensity * Mathf.Clamp01(factor);
+		}
+		enemyLight.intensity = targetIntensity;
 	}
 
 	private void OnDrawGizmosSelected()
@@ -208,5 +243,31 @@ public class Enemy : MonoBehaviour
 		Gizmos.color = new Color(0.2f, 0.8f, 1f, 0.9f);
 		Gizmos.DrawSphere(pointB, 0.05f);
 		Gizmos.DrawLine(home, pointB);
+	}
+
+	/// <summary>
+	/// Start a local blink for this enemy's light.
+	/// </summary>
+	public void StartLightBlink(float duration, float frequency = -1f, float minFactor = -1f, float maxFactor = -1f, bool overrideGate = true)
+	{
+		blinkActive = true;
+		blinkEndTime = Time.time + Mathf.Max(0f, duration);
+		blinkFrequency = (frequency > 0f) ? frequency : defaultBlinkFrequency;
+		blinkMinFactor = (minFactor >= 0f) ? Mathf.Clamp01(minFactor) : defaultBlinkMinFactor;
+		blinkMaxFactor = (maxFactor >= 0f) ? Mathf.Clamp01(maxFactor) : defaultBlinkMaxFactor;
+		this.overrideGate = overrideGate;
+
+		if (enemyLight != null && enemyLight.lightType != Light2D.LightType.Point)
+		{
+			enemyLight.lightType = Light2D.LightType.Point;
+		}
+	}
+
+	/// <summary>
+	/// Explicitly allow or disallow this local light while the global gate is off.
+	/// </summary>
+	public void SetGateOverride(bool enabled)
+	{
+		overrideGate = enabled;
 	}
 }
