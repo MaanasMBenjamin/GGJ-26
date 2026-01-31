@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class PlayerMoment : MonoBehaviour
 {
@@ -20,13 +20,13 @@ public class PlayerMoment : MonoBehaviour
         Vector2 moveDir = new Vector2(hor, ver).normalized;
         playerRB.linearVelocity = moveDir * moveSpeed;
 
-       
-        //if (hor != 0)
-        //{
-        //    Vector3 scale = transform.localScale;
-        //    scale.x = Mathf.Sign(hor) * Mathf.Abs(scale.x);
-        //    transform.localScale = scale;
-        //}
+
+        if (hor != 0)
+        {
+            Vector3 scale = transform.localScale;
+            scale.x = Mathf.Sign(hor) * Mathf.Abs(scale.x);
+            transform.localScale = scale;
+        }
 
         // Animator parameters
         plyAnim.SetFloat("moveX", hor);
