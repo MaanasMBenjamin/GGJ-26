@@ -36,6 +36,13 @@ public class MaskSpawner : MonoBehaviour
     [SerializeField] private bool alwaysRandomAbility = true;
     [Tooltip("Manual spawn points used when randomSpawning is false. If empty, child transforms are used.")]
     [SerializeField] private Transform[] manualSpawnPoints;
+    [Header("Rotation Options")]
+    [Tooltip("When using manual points, inherit each point's rotation for the spawned mask.")]
+    [SerializeField] private bool inheritRotationFromManualPoints = true;
+    [Tooltip("When using random positions, use the prefab's rotation for spawned masks.")]
+    [SerializeField] private bool usePrefabRotationForRandom = true;
+    [Tooltip("Override rotation for random positions when not using prefab rotation.")]
+    [SerializeField] private Vector3 randomRotationEuler = Vector3.zero;
 
     private readonly List<Vector2> spawnedPositions = new List<Vector2>();
 
@@ -90,6 +97,7 @@ public class MaskSpawner : MonoBehaviour
         }
         // Build spawn points and ability types based on options
         var points = new List<Vector2>();
+        var rotations = new List<Quaternion>();
         var typesToSpawn = new List<MaskType>();
         int total = Mathf.Max(0, spawnCount);
         if (randomSpawning)
@@ -113,6 +121,8 @@ public class MaskSpawner : MonoBehaviour
                     else pos = (Vector2)camCenter + Random.insideUnitCircle * (spawnRadius * 0.2f);
                 }
                 points.Add(pos);
+                Quaternion rot = usePrefabRotationForRandom ? maskPrefab.transform.rotation : Quaternion.Euler(randomRotationEuler);
+                rotations.Add(rot);
             }
         }
         else
@@ -141,13 +151,16 @@ public class MaskSpawner : MonoBehaviour
             foreach (var t in manual)
             {
                 points.Add(t.position);
+                Quaternion rot = inheritRotationFromManualPoints ? t.rotation : (usePrefabRotationForRandom ? maskPrefab.transform.rotation : Quaternion.Euler(randomRotationEuler));
+                rotations.Add(rot);
             }
         }
 
         for (int i = 0; i < points.Count; i++)
         {
             Vector2 pos = points[i];
-            var go = Instantiate(maskPrefab, pos, Quaternion.identity, transform);
+            Quaternion rot = rotations[i];
+            var go = Instantiate(maskPrefab, pos, rot, transform);
             var mask = go.GetComponent<Mask>();
             if (mask != null)
             {
