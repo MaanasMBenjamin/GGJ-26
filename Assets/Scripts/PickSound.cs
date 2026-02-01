@@ -26,6 +26,16 @@ public class PickSound : MonoBehaviour
     [SerializeField] private bool autoUseSelfAudioSourceForMask = true;
     [Tooltip("If true, tries to use an AudioSource on this GameObject for item sound when none is assigned.")]
     [SerializeField] private bool autoUseSelfAudioSourceForItem = false;
+    [Tooltip("If true, ensures there's a Collider2D set as trigger on this GameObject.")]
+    [SerializeField] private bool autoMarkColliderAsTrigger = true;
+
+    [Header("Pickup Actions")]
+    [Tooltip("If true, destroys this GameObject on player pickup.")]
+    [SerializeField] private bool destroyOnPickup = true;
+    [Tooltip("If true, waits until the played audio clip finishes before destroying.")]
+    [SerializeField] private bool destroyAfterAudio = true;
+    [Tooltip("Fallback delay for destroy when no clip is available or destroyAfterAudio is false.")]
+    [SerializeField] private float destroyDelaySeconds = 0f;
 
     private void Awake()
     {
@@ -36,6 +46,11 @@ public class PickSound : MonoBehaviour
         if (itemAudioSource == null && autoUseSelfAudioSourceForItem)
         {
             itemAudioSource = GetComponent<AudioSource>();
+        }
+        if (autoMarkColliderAsTrigger)
+        {
+            var col = GetComponent<Collider2D>();
+            if (col != null) col.isTrigger = true;
         }
     }
 
@@ -50,6 +65,33 @@ public class PickSound : MonoBehaviour
         if (playItemOnTrigger)
         {
             PlayItemPickupSound();
+        }
+
+        if (destroyOnPickup)
+        {
+            float delay = destroyDelaySeconds;
+            if (destroyAfterAudio)
+            {
+                // Prefer the source we just used; if both toggles, pick item first
+                AudioSource src = null;
+                if (playItemOnTrigger && itemAudioSource != null) src = itemAudioSource;
+                else if (playMaskOnTrigger && maskAudioSource != null) src = maskAudioSource;
+                if (src != null && src.clip != null)
+                {
+                    // Adjust for pitch
+                    float length = src.clip.length;
+                    float pitch = Mathf.Approximately(src.pitch, 0f) ? 1f : src.pitch;
+                    delay = length / pitch;
+                }
+            }
+            if (delay <= 0f)
+            {
+                Destroy(gameObject);
+            }
+            else
+            {
+                Destroy(gameObject, delay);
+            }
         }
     }
 
