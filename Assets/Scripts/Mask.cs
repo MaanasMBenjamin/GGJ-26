@@ -40,6 +40,12 @@ public class Mask : MonoBehaviour
     [SerializeField] private float blinkIntervalSeconds = 3f;
     [SerializeField] private bool blinkEnabled = true; // per-mask opt-out
     [SerializeField] private bool hideMasksOutsideBlink = true; // hide all masks except the one currently blinking
+    [Tooltip("Randomize the wait time between blink cycles.")]
+    [SerializeField] private bool useRandomBlinkInterval = false;
+    [Tooltip("Minimum seconds between blink cycles when random is enabled.")]
+    [SerializeField] private float randomBlinkIntervalMin = 1f;
+    [Tooltip("Maximum seconds between blink cycles when random is enabled.")]
+    [SerializeField] private float randomBlinkIntervalMax = 3f;
     [SerializeField] private bool gatePickupByVisibility = true; // when hidden, player cannot pick
 
     private static readonly List<Mask> masks = new List<Mask>();
@@ -148,11 +154,8 @@ public class Mask : MonoBehaviour
 
         if (debugLogs) Debug.Log($"[Mask] Registered #{spawnIndex} type={type} cooldown={abilityCooldownSeconds:F1}s");
 
-        if (!coordinatorRunning)
-        {
-            coordinatorRunning = true;
-            StartCoroutine(BlinkCoordinatorLoop());
-        }
+        // Start independent blinking per mask so order is randomized per instance
+        StartCoroutine(IndependentBlinkLoop());
 
         // Setup glow light
         if (!disableGlowCompletely && glowLight == null && autoCreateGlowLight)
@@ -297,8 +300,11 @@ public class Mask : MonoBehaviour
     {
         while (true)
         {
-            // Wait for interval
-            yield return new WaitForSeconds(Mathf.Max(0.01f, blinkIntervalSeconds));
+            // Wait for interval (randomizable)
+            float min = Mathf.Min(randomBlinkIntervalMin, randomBlinkIntervalMax);
+            float max = Mathf.Max(randomBlinkIntervalMin, randomBlinkIntervalMax);
+            float interval = useRandomBlinkInterval ? Random.Range(min, max) : blinkIntervalSeconds;
+            yield return new WaitForSeconds(Mathf.Max(0.01f, interval));
 
             // If sacrifice equipped, skip blinking (masks should be revealed)
             if (PlayerMask.IsSacrificeEquipped) continue;
@@ -350,6 +356,45 @@ public class Mask : MonoBehaviour
 
                 yield return new WaitForSeconds(0.1f);
             }
+        }
+    }
+
+    private IEnumerator IndependentBlinkLoop()
+    {
+        while (true)
+        {
+            // Wait for the next blink window
+            float min = Mathf.Min(randomBlinkIntervalMin, randomBlinkIntervalMax);
+            float max = Mathf.Max(randomBlinkIntervalMin, randomBlinkIntervalMax);
+            float interval = useRandomBlinkInterval ? Random.Range(min, max) : blinkIntervalSeconds;
+            yield return new WaitForSeconds(Mathf.Max(0.01f, interval));
+
+            if (!blinkEnabled) { yield return new WaitForSeconds(0.05f); continue; }
+            if (PlayerMask.IsSacrificeEquipped) { yield return new WaitForSeconds(0.05f); continue; }
+            if (!blinkEnabledGlobal) { yield return new WaitForSeconds(0.05f); continue; }
+            if (spriteRenderer == null) { yield return null; continue; }
+
+            // Show this mask for its blink duration
+            Sprite toShow = blinkSprite != null ? blinkSprite : (originalSprite != null ? originalSprite : GetAbilitySpriteForHud());
+            SetSpriteSafe(toShow);
+            spriteRenderer.enabled = true;
+            SetPickupEnabled(true);
+
+            float dur = Mathf.Max(0.01f, blinkDuration);
+            yield return new WaitForSeconds(dur);
+
+            // Restore after blink if not revealed
+            if (!PlayerMask.IsSacrificeEquipped)
+            {
+                SetSpriteSafe(originalSprite);
+            }
+            if (hideMasksOutsideBlink)
+            {
+                spriteRenderer.enabled = false;
+                SetPickupEnabled(false);
+            }
+
+            yield return new WaitForSeconds(0.05f);
         }
     }
 
