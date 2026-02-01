@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 public class PauseMenu : MonoBehaviour
 {
     public GameObject container;
+    public AudioSource menuSound;
 
     void Update()
     {
@@ -18,6 +19,15 @@ public class PauseMenu : MonoBehaviour
             {
                 ResumeButton();
             }
+            playClick();
+        }
+    }
+
+    public void playClick()
+    {
+        if(menuSound != null)
+        {
+            menuSound.PlayOneShot(menuSound.clip);
         }
     }
     public void PauseButton()
