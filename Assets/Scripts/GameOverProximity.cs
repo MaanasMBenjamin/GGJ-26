@@ -1,6 +1,7 @@
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Triggers Game Over when the player is within a configurable radius of any enemy.
@@ -197,7 +198,8 @@ public class GameOverProximity : MonoBehaviour
         isGameFrozen = true;
 
         // Freeze time
-        Time.timeScale = 0f;
+        SceneManager.LoadScene(3);
+        // Time.timeScale = 0f;
         if (debugLogs) Debug.Log("[GameOverProximity] Game Over: player entered enemy radius; freezing game.");
 
         // Ensure scene stays dark (turn off local lights, fully darken global)
