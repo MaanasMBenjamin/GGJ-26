@@ -40,10 +40,13 @@ public class Mask : MonoBehaviour
     [SerializeField] private float blinkIntervalSeconds = 3f;
     [SerializeField] private bool blinkEnabled = true; // per-mask opt-out
     [SerializeField] private bool hideMasksOutsideBlink = true; // hide all masks except the one currently blinking
+    [SerializeField] private bool gatePickupByVisibility = true; // when hidden, player cannot pick
 
     private static readonly List<Mask> masks = new List<Mask>();
     private static bool coordinatorRunning;
     private static bool blinkEnabledGlobal = true; // global control
+    private bool picked;
+    private List<Collider2D> triggerColliders;
 
     [Header("Glow Light (URP 2D)")]
     [SerializeField] private Light2D glowLight;
@@ -137,6 +140,7 @@ public class Mask : MonoBehaviour
         if (hideMasksOutsideBlink && blinkEnabledGlobal && !PlayerMask.IsSacrificeEquipped && spriteRenderer != null)
         {
             spriteRenderer.enabled = false;
+            SetPickupEnabled(false);
         }
 
         spawnIndex = masks.Count;
@@ -177,6 +181,7 @@ public class Mask : MonoBehaviour
         if (useCrispSilhouetteInsteadOfGlow && spriteRenderer != null)
         {
             spriteRenderer.enabled = true;
+            SetPickupEnabled(true);
             if (PlayerMask.IsSacrificeEquipped) ApplyAbilitySprite(); else ApplyHiddenSprite();
         }
     }
@@ -190,7 +195,16 @@ public class Mask : MonoBehaviour
         if (!other.CompareTag("Player")) return;
         var pm = other.GetComponent<PlayerMask>();
         if (pm == null) return;
+        if (picked) return; // already picked, ignore further triggers
+        // Only allow pickup when the mask is currently visible (if gated)
+        if (gatePickupByVisibility && (spriteRenderer == null || !spriteRenderer.enabled))
+        {
+            if (debugLogs) Debug.Log("[Mask] Pickup ignored: mask not visible");
+            return;
+        }
         if (debugLogs) Debug.Log($"[Mask] {type} picked by player");
+        picked = true;
+        SetPickupEnabled(false);
         pm.EquipMask(this);
         Destroy(gameObject);
     }
@@ -234,10 +248,12 @@ public class Mask : MonoBehaviour
             {
                 m.ApplyAbilitySprite();
                 if (m.spriteRenderer != null) m.spriteRenderer.enabled = true; // ensure visible while revealed
+                m.SetPickupEnabled(true);
             }
             else
             {
                 m.ApplyHiddenSprite();
+                if (m.hideMasksOutsideBlink && blinkEnabledGlobal) m.SetPickupEnabled(false);
             }
         }
     }
@@ -301,6 +317,7 @@ public class Mask : MonoBehaviour
                     if (mHide != null && mHide.spriteRenderer != null)
                     {
                         mHide.spriteRenderer.enabled = false;
+                        mHide.SetPickupEnabled(false);
                     }
                 }
             }
@@ -315,6 +332,7 @@ public class Mask : MonoBehaviour
                 Sprite toShow = m.blinkSprite != null ? m.blinkSprite : (m.originalSprite != null ? m.originalSprite : m.GetAbilitySpriteForHud());
                 m.SetSpriteSafe(toShow);
                 m.spriteRenderer.enabled = true;
+                m.SetPickupEnabled(true);
 
                 float dur = Mathf.Max(0.01f, m.blinkDuration);
                 yield return new WaitForSeconds(dur);
@@ -327,6 +345,7 @@ public class Mask : MonoBehaviour
                 if (hideMasksOutsideBlink)
                 {
                     m.spriteRenderer.enabled = false;
+                    m.SetPickupEnabled(false);
                 }
 
                 yield return new WaitForSeconds(0.1f);
@@ -386,6 +405,7 @@ public class Mask : MonoBehaviour
                 if (!PlayerMask.IsSacrificeEquipped && m.hideMasksOutsideBlink)
                 {
                     m.spriteRenderer.enabled = false;
+                    m.SetPickupEnabled(false);
                 }
             }
         }
@@ -398,6 +418,7 @@ public class Mask : MonoBehaviour
                 if (m == null || m.spriteRenderer == null) continue;
                 m.ApplyHiddenSprite();
                 m.spriteRenderer.enabled = true;
+                m.SetPickupEnabled(true);
             }
         }
     }
@@ -473,6 +494,23 @@ public class Mask : MonoBehaviour
         if (!useCrispSilhouetteInsteadOfGlow && !disableGlowCompletely)
         {
             ApplyGlowGate();
+        }
+    }
+
+    private void SetPickupEnabled(bool enabled)
+    {
+        if (triggerColliders == null)
+        {
+            triggerColliders = new List<Collider2D>();
+            var cols = GetComponentsInChildren<Collider2D>(true);
+            foreach (var c in cols)
+            {
+                triggerColliders.Add(c);
+            }
+        }
+        foreach (var c in triggerColliders)
+        {
+            if (c != null) c.enabled = enabled;
         }
     }
 }
