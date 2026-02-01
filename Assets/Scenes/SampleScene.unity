@@ -94220,7 +94220,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ec3613e28afebc46b034c4431e120c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PickSound
-  maskAudioSource: {fileID: 0}
+  maskAudioSource: {fileID: 1908274634}
   itemAudioSource: {fileID: 0}
   volume: 1
   playerTag: Player
