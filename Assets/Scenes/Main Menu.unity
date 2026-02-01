@@ -680,7 +680,7 @@ GameObject:
   - component: {fileID: 1223933305}
   - component: {fileID: 1223933304}
   m_Layer: 5
-  m_Name: Options
+  m_Name: Credits
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -803,7 +803,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -471737973561672446, guid: f19ceb7cb5d722d44a856c32427d768e, type: 3}
+  m_Sprite: {fileID: 2085971924547874135, guid: 3773ac431ee917042b1880a6ed4a93e5, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
