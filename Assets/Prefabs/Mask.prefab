@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7801623892106412591}
   - component: {fileID: 2887948988893583842}
   m_Layer: 6
-  m_Name: Peace
+  m_Name: Mask
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -102,11 +102,35 @@ MonoBehaviour:
   m_GameObject: {fileID: 5938978427060904897}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 995982596887e124f83805ae15933412, type: 3}
+  m_Script: {fileID: 11500000, guid: 25c7cd0cd1c11c44c9f8e7bb3dc08546, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  speedBoost: 1.5
-  collectionVFX: {fileID: 0}
+  type: 0
+  abilityCooldownSeconds: 15
+  spriteRenderer: {fileID: 4479339124698452316}
+  debugLogs: 1
+  blinkDuration: 2
+  blinkSprite: {fileID: 857312311372029537, guid: c27379914346c0142a960a4e8f159523, type: 3}
+  greenSprite: {fileID: -4987337320017983735, guid: a64e0aa7f43aa15419fb85ca66640a71, type: 3}
+  whiteSprite: {fileID: -9124014632845128638, guid: a06437f2855895d40abc2a404a680c5a, type: 3}
+  orangeSprite: {fileID: 7002101924844770019, guid: d5cc28ebad81c00479029165c6dc23d6, type: 3}
+  blinkByHidingIfNoSprite: 1
+  useUnlitMaterial: 1
+  overrideSortingOrder: 1
+  sortingOrder: 5
+  blinkIntervalSeconds: 3
+  blinkEnabled: 0
+  glowLight: {fileID: 0}
+  autoCreateGlowLight: 0
+  respectGlobalLightingState: 1
+  useSpriteShapedGlow: 1
+  hideSpriteWhenGlowEnabled: 1
+  useCrispSilhouetteInsteadOfGlow: 0
+  disableGlowCompletely: 1
+  glowBlendStyleIndex: 0
+  glowRadius: 2.5
+  glowInnerRadiusRatio: 0.5
+  glowIntensity: 0.8
 --- !u!70 &2887948988893583842
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
