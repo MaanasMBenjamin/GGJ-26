@@ -93973,8 +93973,8 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_Resource: {fileID: 8300000, guid: bb120ed7273b7d645ac5715db3c162aa, type: 3}
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -94102,7 +94102,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 0}
+  m_Resource: {fileID: 8300000, guid: be83aec4beed3064c81bcf882a76aa32, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -94220,12 +94220,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ec3613e28afebc46b034c4431e120c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PickSound
-  maskPickupClip: {fileID: 0}
-  itemPickupClip: {fileID: 0}
+  maskAudioSource: {fileID: 0}
+  itemAudioSource: {fileID: 0}
   volume: 1
   playerTag: Player
   playMaskOnTrigger: 1
   playItemOnTrigger: 0
+  autoUseSelfAudioSourceForMask: 1
+  autoUseSelfAudioSourceForItem: 0
 --- !u!4 &44814622409141002
 Transform:
   m_ObjectHideFlags: 0
