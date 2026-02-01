@@ -39,6 +39,7 @@ public class Mask : MonoBehaviour
     [Header("Blink Orchestration")]
     [SerializeField] private float blinkIntervalSeconds = 3f;
     [SerializeField] private bool blinkEnabled = true; // per-mask opt-out
+    [SerializeField] private bool hideMasksOutsideBlink = true; // hide all masks except the one currently blinking
 
     private static readonly List<Mask> masks = new List<Mask>();
     private static bool coordinatorRunning;
@@ -132,6 +133,11 @@ public class Mask : MonoBehaviour
             }
         }
         ApplyHiddenSprite();
+        // Start hidden only when blink is enabled globally and colors are hidden
+        if (hideMasksOutsideBlink && blinkEnabledGlobal && !PlayerMask.IsSacrificeEquipped && spriteRenderer != null)
+        {
+            spriteRenderer.enabled = false;
+        }
 
         spawnIndex = masks.Count;
         masks.Add(this);
@@ -192,6 +198,24 @@ public class Mask : MonoBehaviour
     public MaskType GetMaskType() => type;
     public float GetCooldownSeconds() => abilityCooldownSeconds;
 
+    // UI helper: return the sprite that represents this mask's ability color/icon
+    public Sprite GetAbilitySpriteForHud()
+    {
+        switch (type)
+        {
+            case MaskType.GreenSpeed: return greenSprite;
+            case MaskType.WhiteInvisibility: return whiteSprite;
+            case MaskType.OrangeSacrifice: return orangeSprite;
+            default: return null;
+        }
+    }
+
+    // UI helper: current sprite shown on this mask's renderer (exact pickup look)
+    public Sprite GetCurrentSprite()
+    {
+        return spriteRenderer != null ? spriteRenderer.sprite : null;
+    }
+
     public static void RefreshRevealGate()
     {
         bool reveal = PlayerMask.IsSacrificeEquipped;
@@ -206,7 +230,15 @@ public class Mask : MonoBehaviour
         foreach (var m in masks)
         {
             if (m == null) continue;
-            if (reveal) m.ApplyAbilitySprite(); else m.ApplyHiddenSprite();
+            if (reveal)
+            {
+                m.ApplyAbilitySprite();
+                if (m.spriteRenderer != null) m.spriteRenderer.enabled = true; // ensure visible while revealed
+            }
+            else
+            {
+                m.ApplyHiddenSprite();
+            }
         }
     }
 
@@ -252,21 +284,51 @@ public class Mask : MonoBehaviour
             // Wait for interval
             yield return new WaitForSeconds(Mathf.Max(0.01f, blinkIntervalSeconds));
 
-            // If sacrifice equipped, skip blinking
+            // If sacrifice equipped, skip blinking (masks should be revealed)
             if (PlayerMask.IsSacrificeEquipped) continue;
 
             // Global blink disabled? skip
             if (!blinkEnabledGlobal) continue;
 
-            if (debugLogs) Debug.Log("[Mask] Blink cycle: flashing masks in spawn order");
-            // Blink in spawn order with small step delay
+            if (debugLogs) Debug.Log("[Mask] Blink cycle: only the active mask is visible");
+
+            // Hide all masks first when in hidden mode
+            if (hideMasksOutsideBlink)
+            {
+                for (int i = 0; i < masks.Count; i++)
+                {
+                    var mHide = masks[i];
+                    if (mHide != null && mHide.spriteRenderer != null)
+                    {
+                        mHide.spriteRenderer.enabled = false;
+                    }
+                }
+            }
+
+            // Show each mask for its blink duration then hide again
             for (int i = 0; i < masks.Count; i++)
             {
                 var m = masks[i];
-                if (m != null && m.blinkEnabled)
+                if (m == null || !m.blinkEnabled || m.spriteRenderer == null) { yield return new WaitForSeconds(0.05f); continue; }
+
+                // Choose a safe sprite to show: blink → original → ability fallback
+                Sprite toShow = m.blinkSprite != null ? m.blinkSprite : (m.originalSprite != null ? m.originalSprite : m.GetAbilitySpriteForHud());
+                m.SetSpriteSafe(toShow);
+                m.spriteRenderer.enabled = true;
+
+                float dur = Mathf.Max(0.01f, m.blinkDuration);
+                yield return new WaitForSeconds(dur);
+
+                // restore hidden after blink when not revealed
+                if (!PlayerMask.IsSacrificeEquipped)
                 {
-                    m.StartCoroutine(m.BlinkOnce());
+                    m.SetSpriteSafe(m.originalSprite);
                 }
+                if (hideMasksOutsideBlink)
+                {
+                    m.spriteRenderer.enabled = false;
+                }
+
                 yield return new WaitForSeconds(0.1f);
             }
         }
@@ -317,10 +379,26 @@ public class Mask : MonoBehaviour
         if (enabled)
         {
             Debug.Log("[Mask] Global blink ENABLED");
+            // When enabling blink, respect hidden mode: hide masks if sacrifice is not equipped
+            foreach (var m in masks)
+            {
+                if (m == null || m.spriteRenderer == null) continue;
+                if (!PlayerMask.IsSacrificeEquipped && m.hideMasksOutsideBlink)
+                {
+                    m.spriteRenderer.enabled = false;
+                }
+            }
         }
         else
         {
             Debug.Log("[Mask] Global blink DISABLED (masks stay visible)");
+            // When disabling blink, show masks in their current gate state (hidden or revealed)
+            foreach (var m in masks)
+            {
+                if (m == null || m.spriteRenderer == null) continue;
+                m.ApplyHiddenSprite();
+                m.spriteRenderer.enabled = true;
+            }
         }
     }
 

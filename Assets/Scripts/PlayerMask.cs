@@ -21,6 +21,7 @@ public class PlayerMask : MonoBehaviour
     private PlayerMoment playerMoment;
     private float maskTimer;
     private MaskType currentMask = (MaskType)(-1);
+    private Sprite activeMaskUiSprite; // HUD sprite captured on pickup
 
     public static bool IsInvisible { get; private set; }
     public static bool IsSacrificeEquipped { get; private set; }
@@ -110,6 +111,8 @@ public class PlayerMask : MonoBehaviour
 
         currentMask = type;
         maskTimer = cdEffective;
+        // HUD sprite: use the ability color/icon for clarity
+        activeMaskUiSprite = mask.GetAbilitySpriteForHud();
 
         if (debugLogs) Debug.Log($"[PlayerMask] Picked mask: {type} cooldown {cd:F1}s → effective {cdEffective:F1}s (min {minAbilityDurationSeconds:F1}s)");
 
@@ -166,5 +169,38 @@ public class PlayerMask : MonoBehaviour
         if (debugLogs) Debug.Log("[PlayerMask] Player died due to sacrifice timeout");
         OnPlayerDied?.Invoke();
         Destroy(gameObject);
+    }
+
+    // UI helpers
+    public bool HasActiveMask()
+    {
+        return currentMask >= 0 && maskTimer > 0f;
+    }
+
+    public int GetRemainingSeconds()
+    {
+        return Mathf.Max(0, Mathf.FloorToInt(maskTimer));
+    }
+
+    public MaskType GetActiveMaskType()
+    {
+        return currentMask;
+    }
+
+    public Sprite GetActiveMaskSprite()
+    {
+        return activeMaskUiSprite;
+    }
+
+    public Color GetActiveMaskUiColor()
+    {
+        // Provide a color hint for UI tint when sprite missing
+        switch (currentMask)
+        {
+            case MaskType.GreenSpeed: return new Color(0.45f, 1f, 0.45f, 1f);
+            case MaskType.WhiteInvisibility: return Color.white;
+            case MaskType.OrangeSacrifice: return new Color(1f, 0.5f, 0.2f, 1f);
+            default: return new Color(1f, 0.4f, 0.6f, 1f); // rose fallback
+        }
     }
 }
