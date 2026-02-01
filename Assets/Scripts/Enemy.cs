@@ -20,9 +20,16 @@ public class Enemy : MonoBehaviour
 	[SerializeField] private float patrolSpeed = 3f;        // speed while patrolling
 	[SerializeField] private float postChasePauseSeconds = 4.5f; // pause after chase ends
 
+	[Header("Obstacle Collision Pause")]
+	[SerializeField] private bool pauseOnObstacleCollision = true;
+	[SerializeField] private Vector2 collisionPauseSecondsRange = new Vector2(1f, 3f);
+	[SerializeField] private LayerMask collisionObstacleLayers = 0;
+	[SerializeField] private bool useObstacleTag = true;
+	[SerializeField] private string obstacleTag = "Walls";
+
 	[Header("Per-Instance Randomization")]
 	[Tooltip("If enabled, each enemy randomizes its patrol distance/speed/pause to avoid synchronized movement.")]
-	[SerializeField] private bool randomizePatrol = true;
+	[SerializeField] private bool randomizePatrol = false;
 	[Tooltip("Range for patrol distance along X (min, max).")]
 	[SerializeField] private Vector2 patrolDistanceXRange = new Vector2(2f, 6f);
 	[Tooltip("Range for pause time at patrol points (min, max) seconds.")]
@@ -44,7 +51,7 @@ public class Enemy : MonoBehaviour
 
 	[Header("Collision Handling")]
 	[Tooltip("When enabled, enemy colliders become triggers during chase so they pass through obstacles and the player.")]
-	[SerializeField] private bool passThroughCollisionsWhenChasing = true;
+	[SerializeField] private bool passThroughCollisionsWhenChasing = false;
 	private Collider2D[] selfColliders;
 	private bool[] defaultIsTrigger;
 
@@ -76,6 +83,8 @@ public class Enemy : MonoBehaviour
 
 	private void Awake()
 	{
+
+
 		// Cache colliders and original trigger states for runtime toggling
 		selfColliders = GetComponentsInChildren<Collider2D>(includeInactive: false);
 		if (selfColliders != null && selfColliders.Length > 0)
@@ -152,7 +161,7 @@ public class Enemy : MonoBehaviour
 			patrolIndex = 1; // default: start by moving away from home to B
 		}
 		// Add a small random initial wait to de-sync pauses
-		patrolWaitTimer = randomizePatrol ? Random.Range(0f, Mathf.Min(2f, patrolPauseSeconds * 0.5f)) : 0f;
+		patrolWaitTimer = 0f;
 	}
 
 	private void Update()
@@ -198,12 +207,20 @@ public class Enemy : MonoBehaviour
 		float sqrStop = stoppingDistance * stoppingDistance;
 
 		bool wasChasing = isChasing;
-		// Hysteresis: start chase inside agro; stop chase outside lose
-		if (!isChasing && sqrDist <= sqrAgro)
+		// While in a post-chase/collision pause, do not allow chasing
+		if (!postChaseWaiting)
 		{
-			isChasing = true;
+			// Hysteresis: start chase inside agro; stop chase outside lose
+			if (!isChasing && sqrDist <= sqrAgro)
+			{
+				isChasing = true;
+			}
+			else if (isChasing && sqrDist > sqrLose)
+			{
+				isChasing = false;
+			}
 		}
-		else if (isChasing && sqrDist > sqrLose)
+		else
 		{
 			isChasing = false;
 		}
@@ -279,6 +296,26 @@ public class Enemy : MonoBehaviour
 				}
 			}
 		}
+	}
+
+	private void OnCollisionEnter2D(Collision2D collision)
+	{
+		if (!pauseOnObstacleCollision) return;
+		if (collision == null || collision.collider == null) return;
+		if (collision.collider.isTrigger) return;
+		// Filter by layer and/or tag if configured
+		int layerBit = 1 << collision.collider.gameObject.layer;
+		bool passesLayer = (collisionObstacleLayers.value == 0) || ((collisionObstacleLayers.value & layerBit) != 0);
+		bool passesTag = (!useObstacleTag) || collision.collider.gameObject.CompareTag(obstacleTag);
+		if (!(passesLayer && passesTag)) return;
+
+		// Trigger a post-chase style pause with randomized duration
+		isChasing = false;
+		postChaseWaiting = true;
+		postChaseWaitTimer = 0f;
+		float min = Mathf.Min(collisionPauseSecondsRange.x, collisionPauseSecondsRange.y);
+		float max = Mathf.Max(collisionPauseSecondsRange.x, collisionPauseSecondsRange.y);
+		postChasePauseSeconds = Random.Range(min, max);
 	}
 
 	private void ApplyChaseCollisionMode(bool chasing)

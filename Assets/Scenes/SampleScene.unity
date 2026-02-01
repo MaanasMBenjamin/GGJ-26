@@ -1833,7 +1833,7 @@ GameObject:
   - component: {fileID: 309963459}
   m_Layer: 0
   m_Name: Guard (6)
-  m_TagString: Cop
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1981,6 +1981,18 @@ MonoBehaviour:
   patrolPauseSeconds: 8
   patrolSpeed: 3
   postChasePauseSeconds: 4.5
+  pauseOnObstacleCollision: 1
+  collisionPauseSecondsRange: {x: 1, y: 3}
+  collisionObstacleLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  useObstacleTag: 1
+  obstacleTag: Walls
+  randomizePatrol: 1
+  patrolDistanceXRange: {x: 2, y: 6}
+  patrolPauseSecondsRange: {x: 2, y: 8}
+  patrolSpeedRange: {x: 2, y: 5}
+  randomizeStartSide: 1
   enemyLight: {fileID: 0}
   autoFindChildLight: 1
   autoCreateLightIfMissing: 1
@@ -1989,6 +2001,7 @@ MonoBehaviour:
   lightIntensity: 1
   respectGlobalLightingState: 1
   debugLogs: 0
+  passThroughCollisionsWhenChasing: 1
   defaultBlinkFrequency: 6
   defaultBlinkMinFactor: 0
   defaultBlinkMaxFactor: 1
@@ -6023,7 +6036,7 @@ GameObject:
   - component: {fileID: 700153093}
   m_Layer: 0
   m_Name: Guard (3)
-  m_TagString: Cop
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6171,6 +6184,18 @@ MonoBehaviour:
   patrolPauseSeconds: 8
   patrolSpeed: 3
   postChasePauseSeconds: 4.5
+  pauseOnObstacleCollision: 1
+  collisionPauseSecondsRange: {x: 1, y: 3}
+  collisionObstacleLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  useObstacleTag: 1
+  obstacleTag: Walls
+  randomizePatrol: 1
+  patrolDistanceXRange: {x: 2, y: 6}
+  patrolPauseSecondsRange: {x: 2, y: 8}
+  patrolSpeedRange: {x: 2, y: 5}
+  randomizeStartSide: 1
   enemyLight: {fileID: 0}
   autoFindChildLight: 1
   autoCreateLightIfMissing: 1
@@ -6179,6 +6204,7 @@ MonoBehaviour:
   lightIntensity: 1
   respectGlobalLightingState: 1
   debugLogs: 0
+  passThroughCollisionsWhenChasing: 1
   defaultBlinkFrequency: 6
   defaultBlinkMinFactor: 0
   defaultBlinkMaxFactor: 1
@@ -6380,7 +6406,7 @@ GameObject:
   - component: {fileID: 752909264}
   m_Layer: 0
   m_Name: Guard (9)
-  m_TagString: Cop
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6528,6 +6554,18 @@ MonoBehaviour:
   patrolPauseSeconds: 8
   patrolSpeed: 3
   postChasePauseSeconds: 4.5
+  pauseOnObstacleCollision: 1
+  collisionPauseSecondsRange: {x: 1, y: 3}
+  collisionObstacleLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  useObstacleTag: 1
+  obstacleTag: Walls
+  randomizePatrol: 1
+  patrolDistanceXRange: {x: 2, y: 6}
+  patrolPauseSecondsRange: {x: 2, y: 8}
+  patrolSpeedRange: {x: 2, y: 5}
+  randomizeStartSide: 1
   enemyLight: {fileID: 0}
   autoFindChildLight: 1
   autoCreateLightIfMissing: 1
@@ -6536,6 +6574,7 @@ MonoBehaviour:
   lightIntensity: 1
   respectGlobalLightingState: 1
   debugLogs: 0
+  passThroughCollisionsWhenChasing: 1
   defaultBlinkFrequency: 6
   defaultBlinkMinFactor: 0
   defaultBlinkMaxFactor: 1
@@ -8656,7 +8695,7 @@ GameObject:
   - component: {fileID: 957933773}
   m_Layer: 0
   m_Name: Guard (8)
-  m_TagString: Cop
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -8804,6 +8843,18 @@ MonoBehaviour:
   patrolPauseSeconds: 8
   patrolSpeed: 3
   postChasePauseSeconds: 4.5
+  pauseOnObstacleCollision: 1
+  collisionPauseSecondsRange: {x: 1, y: 3}
+  collisionObstacleLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  useObstacleTag: 1
+  obstacleTag: Walls
+  randomizePatrol: 1
+  patrolDistanceXRange: {x: 2, y: 6}
+  patrolPauseSecondsRange: {x: 2, y: 8}
+  patrolSpeedRange: {x: 2, y: 5}
+  randomizeStartSide: 1
   enemyLight: {fileID: 0}
   autoFindChildLight: 1
   autoCreateLightIfMissing: 1
@@ -8812,6 +8863,7 @@ MonoBehaviour:
   lightIntensity: 1
   respectGlobalLightingState: 1
   debugLogs: 0
+  passThroughCollisionsWhenChasing: 1
   defaultBlinkFrequency: 6
   defaultBlinkMinFactor: 0
   defaultBlinkMaxFactor: 1
@@ -9028,7 +9080,7 @@ GameObject:
   - component: {fileID: 1112613005}
   m_Layer: 0
   m_Name: Guard (1)
-  m_TagString: Cop
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -9176,6 +9228,18 @@ MonoBehaviour:
   patrolPauseSeconds: 8
   patrolSpeed: 3
   postChasePauseSeconds: 4.5
+  pauseOnObstacleCollision: 1
+  collisionPauseSecondsRange: {x: 1, y: 3}
+  collisionObstacleLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  useObstacleTag: 1
+  obstacleTag: Walls
+  randomizePatrol: 1
+  patrolDistanceXRange: {x: 2, y: 6}
+  patrolPauseSecondsRange: {x: 2, y: 8}
+  patrolSpeedRange: {x: 2, y: 5}
+  randomizeStartSide: 1
   enemyLight: {fileID: 0}
   autoFindChildLight: 1
   autoCreateLightIfMissing: 1
@@ -9184,6 +9248,7 @@ MonoBehaviour:
   lightIntensity: 1
   respectGlobalLightingState: 1
   debugLogs: 0
+  passThroughCollisionsWhenChasing: 1
   defaultBlinkFrequency: 6
   defaultBlinkMinFactor: 0
   defaultBlinkMaxFactor: 1
@@ -57790,7 +57855,7 @@ GameObject:
   - component: {fileID: 1456433309}
   m_Layer: 0
   m_Name: Guard (4)
-  m_TagString: Cop
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -57938,6 +58003,18 @@ MonoBehaviour:
   patrolPauseSeconds: 8
   patrolSpeed: 3
   postChasePauseSeconds: 4.5
+  pauseOnObstacleCollision: 1
+  collisionPauseSecondsRange: {x: 1, y: 3}
+  collisionObstacleLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  useObstacleTag: 1
+  obstacleTag: Walls
+  randomizePatrol: 1
+  patrolDistanceXRange: {x: 2, y: 6}
+  patrolPauseSecondsRange: {x: 2, y: 8}
+  patrolSpeedRange: {x: 2, y: 5}
+  randomizeStartSide: 1
   enemyLight: {fileID: 0}
   autoFindChildLight: 1
   autoCreateLightIfMissing: 1
@@ -57946,6 +58023,7 @@ MonoBehaviour:
   lightIntensity: 1
   respectGlobalLightingState: 1
   debugLogs: 0
+  passThroughCollisionsWhenChasing: 1
   defaultBlinkFrequency: 6
   defaultBlinkMinFactor: 0
   defaultBlinkMaxFactor: 1
@@ -57966,7 +58044,7 @@ GameObject:
   - component: {fileID: 1488745838}
   m_Layer: 0
   m_Name: Guard (2)
-  m_TagString: Cop
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -58114,6 +58192,18 @@ MonoBehaviour:
   patrolPauseSeconds: 8
   patrolSpeed: 3
   postChasePauseSeconds: 4.5
+  pauseOnObstacleCollision: 1
+  collisionPauseSecondsRange: {x: 1, y: 3}
+  collisionObstacleLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  useObstacleTag: 1
+  obstacleTag: Walls
+  randomizePatrol: 1
+  patrolDistanceXRange: {x: 2, y: 6}
+  patrolPauseSecondsRange: {x: 2, y: 8}
+  patrolSpeedRange: {x: 2, y: 5}
+  randomizeStartSide: 1
   enemyLight: {fileID: 0}
   autoFindChildLight: 1
   autoCreateLightIfMissing: 1
@@ -58122,6 +58212,7 @@ MonoBehaviour:
   lightIntensity: 1
   respectGlobalLightingState: 1
   debugLogs: 0
+  passThroughCollisionsWhenChasing: 1
   defaultBlinkFrequency: 6
   defaultBlinkMinFactor: 0
   defaultBlinkMaxFactor: 1
@@ -60849,7 +60940,7 @@ GameObject:
   - component: {fileID: 1872161106}
   m_Layer: 0
   m_Name: Guard (7)
-  m_TagString: Cop
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -60997,6 +61088,18 @@ MonoBehaviour:
   patrolPauseSeconds: 8
   patrolSpeed: 3
   postChasePauseSeconds: 4.5
+  pauseOnObstacleCollision: 1
+  collisionPauseSecondsRange: {x: 1, y: 3}
+  collisionObstacleLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  useObstacleTag: 1
+  obstacleTag: Walls
+  randomizePatrol: 1
+  patrolDistanceXRange: {x: 2, y: 6}
+  patrolPauseSecondsRange: {x: 2, y: 8}
+  patrolSpeedRange: {x: 2, y: 5}
+  randomizeStartSide: 1
   enemyLight: {fileID: 0}
   autoFindChildLight: 1
   autoCreateLightIfMissing: 1
@@ -61005,6 +61108,7 @@ MonoBehaviour:
   lightIntensity: 1
   respectGlobalLightingState: 1
   debugLogs: 0
+  passThroughCollisionsWhenChasing: 1
   defaultBlinkFrequency: 6
   defaultBlinkMinFactor: 0
   defaultBlinkMaxFactor: 1
@@ -61569,7 +61673,7 @@ GameObject:
   - component: {fileID: 1912430939}
   m_Layer: 0
   m_Name: Guard (5)
-  m_TagString: Cop
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -61717,6 +61821,18 @@ MonoBehaviour:
   patrolPauseSeconds: 8
   patrolSpeed: 3
   postChasePauseSeconds: 4.5
+  pauseOnObstacleCollision: 1
+  collisionPauseSecondsRange: {x: 1, y: 3}
+  collisionObstacleLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  useObstacleTag: 1
+  obstacleTag: Walls
+  randomizePatrol: 1
+  patrolDistanceXRange: {x: 2, y: 6}
+  patrolPauseSecondsRange: {x: 2, y: 8}
+  patrolSpeedRange: {x: 2, y: 5}
+  randomizeStartSide: 1
   enemyLight: {fileID: 0}
   autoFindChildLight: 1
   autoCreateLightIfMissing: 1
@@ -61725,6 +61841,7 @@ MonoBehaviour:
   lightIntensity: 1
   respectGlobalLightingState: 1
   debugLogs: 0
+  passThroughCollisionsWhenChasing: 1
   defaultBlinkFrequency: 6
   defaultBlinkMinFactor: 0
   defaultBlinkMaxFactor: 1
@@ -62014,9 +62131,9 @@ GameObject:
   - component: {fileID: 8212259446824140951}
   - component: {fileID: 3079487678607493820}
   - component: {fileID: 8612703197591388594}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: W3
-  m_TagString: Untagged
+  m_TagString: Walls
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -62057,9 +62174,9 @@ GameObject:
   - component: {fileID: 2866888427241247617}
   - component: {fileID: 6401598218889298033}
   - component: {fileID: 3749263438214804128}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: W2-D
-  m_TagString: Untagged
+  m_TagString: Walls
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -64844,9 +64961,9 @@ GameObject:
   - component: {fileID: 2776091194797772730}
   - component: {fileID: 4706955733517575673}
   - component: {fileID: 7765065515939080239}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: W4
-  m_TagString: Untagged
+  m_TagString: Walls
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -67998,9 +68115,9 @@ GameObject:
   - component: {fileID: 1058660309356336175}
   - component: {fileID: 1562082568782894995}
   - component: {fileID: 369467560901846125}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: W3-D
-  m_TagString: Untagged
+  m_TagString: Walls
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -68374,9 +68491,9 @@ GameObject:
   - component: {fileID: 1718028870708820916}
   - component: {fileID: 2932443785765272304}
   - component: {fileID: 6422467831111779261}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: W4-D
-  m_TagString: Untagged
+  m_TagString: Walls
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -69556,9 +69673,9 @@ GameObject:
   - component: {fileID: 4800130346850534677}
   - component: {fileID: 7497492043969809903}
   - component: {fileID: 2856870826968790253}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: W1
-  m_TagString: Untagged
+  m_TagString: Walls
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -118039,9 +118156,9 @@ GameObject:
   - component: {fileID: 3433299850297276685}
   - component: {fileID: 1774982290566961278}
   - component: {fileID: 4712486783013112434}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: W2
-  m_TagString: Untagged
+  m_TagString: Walls
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -121200,9 +121317,9 @@ GameObject:
   - component: {fileID: 4016096326767278387}
   - component: {fileID: 2516447218745483172}
   - component: {fileID: 1421821954317354925}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: W1-D
-  m_TagString: Untagged
+  m_TagString: Walls
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

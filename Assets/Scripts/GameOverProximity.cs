@@ -21,7 +21,7 @@ public class GameOverProximity : MonoBehaviour
     [SerializeField] private bool useEnemyTag = true;
     [SerializeField] private string enemyTag = "Enemy";
     [Tooltip("Also check these extra tags (e.g., 'Cop').")]
-    [SerializeField] private string[] additionalEnemyTags = new string[] { "Cop" };
+    [SerializeField] private string[] additionalEnemyTags = new string[] { "Enemy" };
     [Tooltip("Layer(s) containing enemies when tag mode is off.")]
     [SerializeField] private LayerMask enemyLayers;
     [Tooltip("If true, requires clear line-of-sight (no obstacles) to enemy before triggering.")]
