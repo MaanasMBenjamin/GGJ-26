@@ -1909,7 +1909,7 @@ GameObject:
   - component: {fileID: 309963459}
   m_Layer: 0
   m_Name: Guard (6)
-  m_TagString: Enemy
+  m_TagString: Cop
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5945,7 +5945,7 @@ GameObject:
   - component: {fileID: 700153093}
   m_Layer: 0
   m_Name: Guard (3)
-  m_TagString: Enemy
+  m_TagString: Cop
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6233,6 +6233,8 @@ MonoBehaviour:
   checkInterval: 0.05
   useEnemyTag: 1
   enemyTag: Enemy
+  additionalEnemyTags:
+  - Cop
   enemyLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -6250,6 +6252,7 @@ MonoBehaviour:
   disableEnemyScriptsOnFreeze: 1
   disableAllScriptsInScene: 0
   playerTag: Player
+  forceHardFreeze: 1
 --- !u!1 &718534503 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5938978427060904897, guid: 1d0062aa5ad937f419e0e72ee179dfce, type: 3}
@@ -6298,7 +6301,7 @@ GameObject:
   - component: {fileID: 752909264}
   m_Layer: 0
   m_Name: Guard (9)
-  m_TagString: Enemy
+  m_TagString: Cop
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -8650,7 +8653,7 @@ GameObject:
   - component: {fileID: 957933773}
   m_Layer: 0
   m_Name: Guard (8)
-  m_TagString: Enemy
+  m_TagString: Cop
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -8912,7 +8915,7 @@ GameObject:
   - component: {fileID: 1112613005}
   m_Layer: 0
   m_Name: Guard (1)
-  m_TagString: Enemy
+  m_TagString: Cop
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -57674,7 +57677,7 @@ GameObject:
   - component: {fileID: 1456433309}
   m_Layer: 0
   m_Name: Guard (4)
-  m_TagString: Enemy
+  m_TagString: Cop
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -57850,7 +57853,7 @@ GameObject:
   - component: {fileID: 1488745838}
   m_Layer: 0
   m_Name: Guard (2)
-  m_TagString: Enemy
+  m_TagString: Cop
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -60623,7 +60626,7 @@ GameObject:
   - component: {fileID: 1872161106}
   m_Layer: 0
   m_Name: Guard (7)
-  m_TagString: Enemy
+  m_TagString: Cop
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -61343,7 +61346,7 @@ GameObject:
   - component: {fileID: 1912430939}
   m_Layer: 0
   m_Name: Guard (5)
-  m_TagString: Enemy
+  m_TagString: Cop
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
