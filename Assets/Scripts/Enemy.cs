@@ -20,6 +20,18 @@ public class Enemy : MonoBehaviour
 	[SerializeField] private float patrolSpeed = 3f;        // speed while patrolling
 	[SerializeField] private float postChasePauseSeconds = 4.5f; // pause after chase ends
 
+	[Header("Per-Instance Randomization")]
+	[Tooltip("If enabled, each enemy randomizes its patrol distance/speed/pause to avoid synchronized movement.")]
+	[SerializeField] private bool randomizePatrol = true;
+	[Tooltip("Range for patrol distance along X (min, max).")]
+	[SerializeField] private Vector2 patrolDistanceXRange = new Vector2(2f, 6f);
+	[Tooltip("Range for pause time at patrol points (min, max) seconds.")]
+	[SerializeField] private Vector2 patrolPauseSecondsRange = new Vector2(2f, 8f);
+	[Tooltip("Range for patrol movement speed (min, max).")]
+	[SerializeField] private Vector2 patrolSpeedRange = new Vector2(2f, 5f);
+	[Tooltip("Randomize whether the enemy starts targeting A or B at the beginning.")]
+	[SerializeField] private bool randomizeStartSide = true;
+
 	[Header("Enemy Light (URP 2D)")]
 	[SerializeField] private Light2D enemyLight; // optional light to sync with agro
 	[SerializeField] private bool autoFindChildLight = true;
@@ -29,6 +41,12 @@ public class Enemy : MonoBehaviour
 	[SerializeField] private float lightIntensity = 1f; // 0..1
 	[SerializeField] private bool respectGlobalLightingState = true; // disable during scene flicker
 	[SerializeField] private bool debugLogs = false; // enable for chase/invisibility logs
+
+	[Header("Collision Handling")]
+	[Tooltip("When enabled, enemy colliders become triggers during chase so they pass through obstacles and the player.")]
+	[SerializeField] private bool passThroughCollisionsWhenChasing = true;
+	private Collider2D[] selfColliders;
+	private bool[] defaultIsTrigger;
 
 	[Header("Light Blink")]
 	[SerializeField] private float defaultBlinkFrequency = 6f;
@@ -58,6 +76,17 @@ public class Enemy : MonoBehaviour
 
 	private void Awake()
 	{
+		// Cache colliders and original trigger states for runtime toggling
+		selfColliders = GetComponentsInChildren<Collider2D>(includeInactive: false);
+		if (selfColliders != null && selfColliders.Length > 0)
+		{
+			defaultIsTrigger = new bool[selfColliders.Length];
+			for (int i = 0; i < selfColliders.Length; i++)
+			{
+				defaultIsTrigger[i] = selfColliders[i].isTrigger;
+			}
+		}
+
 		if (enemyLight == null && autoFindChildLight)
 		{
 			enemyLight = GetComponentInChildren<Light2D>();
@@ -94,11 +123,36 @@ public class Enemy : MonoBehaviour
 		// Safe for many prefab instances placed randomly.
 		homePosition = transform.position;
 
+		// Per-instance randomization to make each police patrol unique
+		if (randomizePatrol)
+		{
+			float dMin = Mathf.Min(patrolDistanceXRange.x, patrolDistanceXRange.y);
+			float dMax = Mathf.Max(patrolDistanceXRange.x, patrolDistanceXRange.y);
+			patrolDistanceX = Random.Range(dMin, dMax);
+
+			float pMin = Mathf.Min(patrolPauseSecondsRange.x, patrolPauseSecondsRange.y);
+			float pMax = Mathf.Max(patrolPauseSecondsRange.x, patrolPauseSecondsRange.y);
+			patrolPauseSeconds = Random.Range(pMin, pMax);
+
+			float sMin = Mathf.Min(patrolSpeedRange.x, patrolSpeedRange.y);
+			float sMax = Mathf.Max(patrolSpeedRange.x, patrolSpeedRange.y);
+			patrolSpeed = Random.Range(sMin, sMax);
+
+			if (randomizeStartSide)
+			{
+				patrolIndex = Random.Range(0, 2); // 0 or 1
+			}
+		}
+
 		// Initialize patrol points based on home
 		patrolPointA = homePosition;
 		patrolPointB = homePosition + Vector3.right * patrolDistanceX;
-		patrolIndex = 1; // start by moving away from home to B
-		patrolWaitTimer = 0f;
+		if (!randomizePatrol || !randomizeStartSide)
+		{
+			patrolIndex = 1; // default: start by moving away from home to B
+		}
+		// Add a small random initial wait to de-sync pauses
+		patrolWaitTimer = randomizePatrol ? Random.Range(0f, Mathf.Min(2f, patrolPauseSeconds * 0.5f)) : 0f;
 	}
 
 	private void Update()
@@ -152,6 +206,12 @@ public class Enemy : MonoBehaviour
 		else if (isChasing && sqrDist > sqrLose)
 		{
 			isChasing = false;
+		}
+
+		// Toggle collision pass-through mode on chase state changes
+		if (wasChasing != isChasing)
+		{
+			ApplyChaseCollisionMode(isChasing);
 		}
 
 		// If we just stopped chasing, start a short pause before resuming patrol
@@ -216,6 +276,31 @@ public class Enemy : MonoBehaviour
 				{
 					Vector3 homeStep = (Vector3)(toHome.normalized * returnSpeed * Time.deltaTime);
 					transform.position += homeStep;
+				}
+			}
+		}
+	}
+
+	private void ApplyChaseCollisionMode(bool chasing)
+	{
+		if (!passThroughCollisionsWhenChasing) return;
+		if (selfColliders == null || selfColliders.Length == 0) return;
+
+		if (chasing)
+		{
+			for (int i = 0; i < selfColliders.Length; i++)
+			{
+				selfColliders[i].isTrigger = true;
+			}
+		}
+		else
+		{
+			// Restore original trigger states when not chasing
+			if (defaultIsTrigger != null && defaultIsTrigger.Length == selfColliders.Length)
+			{
+				for (int i = 0; i < selfColliders.Length; i++)
+				{
+					selfColliders[i].isTrigger = defaultIsTrigger[i];
 				}
 			}
 		}
