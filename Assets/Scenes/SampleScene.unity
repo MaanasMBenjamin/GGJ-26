@@ -63554,7 +63554,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PauseMenu
   container: {fileID: 7229443480899403933}
-  menuSound: {fileID: 0}
+  menuSound: {fileID: 1582763957}
 --- !u!4 &3654497384551386620
 Transform:
   m_ObjectHideFlags: 0
