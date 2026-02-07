@@ -57,4 +57,4 @@ Each mask includes a **6-second cooldown** once equipped.
 
 This project is an unfinished project created during **Global Game Jam 2026**.
 
-We currently have no plans to continue development or rework the project. The repository is maintained as a learning reference and as documentation of the concept created during the game jam.
+We currently have no plans to continue development or rework the project. 
