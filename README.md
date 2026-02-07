@@ -1,4 +1,4 @@
-# 🎭 Reclamation: 1947 – GGJ 2026 Prototype
+# 🎭 Reclamation: 1947 – GGJ 2026
 
 ## 📌 Overview
 
@@ -6,7 +6,7 @@
 
 The game was built around the jam theme **“Mask”** and integrates symbolism inspired by Indian cultural elements, particularly the meanings behind the colors of the Indian flag.
 
----
+
 
 ## 🧭 Story & Concept
 
@@ -14,7 +14,6 @@ The game follows a character attempting to reclaim cultural artifacts that were 
 
 Players must infiltrate the laboratory, bypass advanced security systems, and strategically use special masks that grant unique abilities. Each mask reflects symbolic meanings derived from the colors of the Indian flag, connecting gameplay mechanics with cultural themes.
 
----
 
 ## 🎮 Gameplay Overview
 
