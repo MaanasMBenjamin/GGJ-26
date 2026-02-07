@@ -38,7 +38,7 @@ Each mask provides a unique gameplay advantage and introduces strategic decision
 - Reveals the true colors and abilities of all masks during the next blink cycle
 - If the player fails to switch to another mask before cooldown ends, the player dies
 
----
+
 
 ## ✨ Unique Gameplay Mechanic – Mask Blink System
 
