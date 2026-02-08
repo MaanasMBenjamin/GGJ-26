@@ -1,4 +1,5 @@
-![BG 1](https://github.com/user-attachments/assets/773102ce-6573-4305-9aa1-c9ff360b3097)
+<img width="800" height="450" alt="Screenshot 2026-02-01 170445" src="https://github.com/user-attachments/assets/773102ce-6573-4305-9aa1-c9ff360b3097"/>
+
 # 🎭 Reclamation: 1947 – GGJ 2026
 
 ## 📌 Overview
