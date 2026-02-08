@@ -50,8 +50,7 @@ Masks appear inside rooms using a blinking visibility system.
 - The true color and ability of a mask is revealed only after equipping it
 - Prevents players from always selecting safe or preferred abilities
 - Encourages exploration, experimentation, and risk management
-- 
-Each mask includes a **6-second cooldown** once equipped.
+- Each mask includes a **6-second cooldown** once equipped.
 
 <img width="800" height="450" alt="Screenshot 2026-02-01 170445" src="https://github.com/user-attachments/assets/605299dc-0ed9-4e47-8dc8-c2a4075395e3" />
 
